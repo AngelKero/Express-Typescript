@@ -1,5 +1,6 @@
 import express from "express";
 import products from "./routes/products.route";
+import defaultRoute from "./routes/default.route";
 
 export class Server {
   port: string | number;
@@ -10,6 +11,7 @@ export class Server {
     this.port = process.env.PORT || 3000,
     this.app = express(),
     this.paths = {
+      default: "/",
       products: "/api/products",
       users: "/api/users",
       categories: "/api/categories"
@@ -18,6 +20,7 @@ export class Server {
   }
 
   routes(): void {
+    this.app.use(this.paths.default, defaultRoute);
     this.app.use(this.paths.products, products)
   }
 

@@ -4,7 +4,7 @@ import faker from "faker";
 const router = express.Router();
 
 router.get('/', (_req, res) => {
-  let { size } = _req.query;
+  const { size } = _req.query;
 
   const MAX_SIZE = 100;
   const limit = Number(size) > MAX_SIZE ? MAX_SIZE : size || 10;
