@@ -3,6 +3,7 @@ import { MainRouter } from "./server.router";
 import { logErrors, boomErrorHandler } from "./middlewares/error.handler";
 import cors from "cors";
 import boom from "@hapi/boom";
+import config from "./config/config";
 
 export class Server {
   port: string | number;
@@ -11,7 +12,7 @@ export class Server {
   corsOptions: cors.CorsOptions;
 
   constructor() {
-    this.port = process.env.PORT || 3000;
+    this.port = config.port;
     this.app = express();
 
     this.middlewares();

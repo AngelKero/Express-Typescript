@@ -20,7 +20,6 @@
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "faker": "^5.5.3",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
     "ts-node": "^10.4.0",
@@ -29,9 +28,11 @@
   },
   "dependencies": {
     "@hapi/boom": "^9.1.4",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "express-generator": "^4.2.0",
-    "joi": "^17.5.0"
+    "joi": "^17.5.0",
+    "faker": "^5.5.3"
   }
 }
