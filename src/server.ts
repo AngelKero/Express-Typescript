@@ -1,32 +1,53 @@
 import express from "express";
-import products from "./routes/products.route";
-import defaultRoute from "./routes/default.route";
+import { MainRouter } from "./server.router";
+import { logErrors, boomErrorHandler } from "./middlewares/error.handler";
+import cors from "cors";
+import boom from "@hapi/boom";
 
 export class Server {
   port: string | number;
   app: express.Application;
-  paths: { [index: string]: string };
+  whiteList: string[];
+  corsOptions: cors.CorsOptions;
 
   constructor() {
-    this.port = process.env.PORT || 3000,
-    this.app = express(),
-    this.paths = {
-      default: "/",
-      products: "/api/products",
-      users: "/api/users",
-      categories: "/api/categories"
-    };
-    this.routes();
+    this.port = process.env.PORT || 3000;
+    this.app = express();
+
+    this.middlewares();
+    new MainRouter(this.app).routes();
+    this.errorMiddlewares();
   }
 
-  routes(): void {
-    this.app.use(this.paths.default, defaultRoute);
-    this.app.use(this.paths.products, products)
+  middlewares() {
+    this.app.use(express.json());
+    this.securityConfig();
   }
+
+  securityConfig() {
+    this.whiteList = ["http://localhost:3001"];
+    this.corsOptions = {
+      origin: (origin, callback) => {
+        if (this.whiteList.indexOf(origin) !== -1 || !origin) {
+          callback(null, true);
+        } else {
+          callback(boom.forbidden("Origin not allowed"));
+        }
+      }
+    };
+    this.app.use(cors(this.corsOptions));
+  }
+
+  errorMiddlewares(): void {
+    this.app.use(logErrors);
+    this.app.use(boomErrorHandler);
+  }
+
+  corsValidation
 
   listen(): void {
     this.app.listen(this.port, () => {
-      console.log(`Servidor corriendo en puerto ${this.port}`);
+      console.log(`Servidor corriendo en puerto http://localhost:${this.port}`);
     });
   }
 }
