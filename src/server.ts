@@ -25,9 +25,9 @@ export class Server {
   }
 
   securityConfig() {
-    this.whiteList = ["http://localhost:3001"];
+    this.whiteList = ["http://localhost:3500", "http://localhost:5500"];
     this.corsOptions = {
-      origin: (origin, callback) => {
+      origin: (origin: string | null, callback: Function) => {
         if (this.whiteList.indexOf(origin) !== -1 || !origin) {
           callback(null, true);
         } else {
