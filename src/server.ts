@@ -4,6 +4,7 @@ import { logErrors, boomErrorHandler } from "./middlewares/error.handler";
 import cors from "cors";
 import boom from "@hapi/boom";
 import config from "./config/config";
+import passport from "passport";
 
 export class Server {
   port: string | number;
@@ -23,6 +24,7 @@ export class Server {
   middlewares() {
     this.app.use(express.json());
     this.securityConfig();
+    this.app.use(passport.initialize());
   }
 
   securityConfig() {
@@ -40,11 +42,9 @@ export class Server {
   }
 
   errorMiddlewares(): void {
-    this.app.use(logErrors);
+    !config.isProd && this.app.use(logErrors);
     this.app.use(boomErrorHandler);
   }
-
-  corsValidation
 
   listen(): void {
     this.app.listen(this.port, () => {

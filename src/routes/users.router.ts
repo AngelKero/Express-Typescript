@@ -1,40 +1,25 @@
 import express from "express";
-import faker from "faker";
+import { checkApiKey } from "../middlewares/auth.handler";
+import controller from "./../controllers/user.controller";
+import validateData from "./../middlewares/validator.handler";
+import { createUserValidation, getUserValidation } from "./../validations/user.validator";
 const router = express.Router();
 
-router.get("/", (_req, res) => {
-  const { size } = _req.query;
+router.get("/",
+  checkApiKey,
+  controller.all
+);
 
-  const MAX_SIZE = 100;
-  const limit = Number(size) > MAX_SIZE ? MAX_SIZE : size || 10;
+router.get("/:id",
+  checkApiKey,
+  validateData(getUserValidation, "params"),
+  controller.one
+);
 
-  const users = [];
-  for (let i = 0; i < limit; i++) {
-    users.push({
-      id: i,
-      name: faker.name.findName(),
-      email: faker.internet.email(),
-      avatar: faker.image.avatar()
-    });
-  }
-
-  res.json({
-    totalUsers: users.length,
-    users
-  });
-});
-
-router.get("/:id", (_req, res) => {
-  const { id } = _req.params;
-
-  const user = {
-    id,
-    name: faker.name.findName(),
-    email: faker.internet.email(),
-    avatar: faker.image.avatar()
-  };
-
-  res.json(user);
-});
+router.post("/",
+  checkApiKey,
+  validateData(createUserValidation, "body"),
+  controller.create
+);
 
 export default router;

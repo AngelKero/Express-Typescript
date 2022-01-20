@@ -1,4 +1,6 @@
 import express from "express";
+import passport from "passport";
+import { checkRoles } from "./../middlewares/auth.handler";
 import controller from "./../controllers/product.controller";
 import validateData from "./../middlewares/validator.handler";
 import { ProductService } from "./../services/product.service";
@@ -20,12 +22,15 @@ router.get('/:id', validateData(getProductValidation, 'params'), controller.one)
 
 // POST
 router.post('/',
+  passport.authenticate('jwt', { session: false }),
+  checkRoles('admin', 'seller'),
   validateData(createProductValidation, 'body'),
   controller.create
 );
 
 // PUT
 router.put('/:id',
+  passport.authenticate('jwt', { session: false }),
   validateData(getProductValidation, 'params'),
   validateData(updateProductValidation, 'body'),
   controller.update
@@ -33,12 +38,14 @@ router.put('/:id',
 
 // PATCH
 router.patch('/:id',
+  passport.authenticate('jwt', { session: false }),
   validateData(getProductValidation, 'params'),
   validateData(updateProductValidation, 'body'),
   controller.partialUpdate
 );
 
 router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
   validateData(getProductValidation, 'params'),
   controller.delete
 );
