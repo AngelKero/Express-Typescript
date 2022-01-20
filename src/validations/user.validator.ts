@@ -5,7 +5,6 @@ const id = Joi.string().uuid();
 const name = Joi.string().min(3).max(150);
 const email = Joi.string().email();
 const avatar = Joi.string().uri();
-const not = Joi.string().min(8).max(70);
 const password = Joi.string();
 const role = Joi.string().valid("user", "admin");
 

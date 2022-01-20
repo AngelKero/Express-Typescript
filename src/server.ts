@@ -1,10 +1,14 @@
 import express from "express";
+import session from "express-session";
+import cors from "cors";
+import passport from "passport";
+import helmet from "helmet";
+import MongoStore from "connect-mongo";
+import boom from "@hapi/boom";
 import { MainRouter } from "./server.router";
 import { logErrors, boomErrorHandler } from "./middlewares/error.handler";
-import cors from "cors";
-import boom from "@hapi/boom";
 import config from "./config/config";
-import passport from "passport";
+import db from "./db/index";
 
 export class Server {
   port: string | number;
@@ -23,8 +27,32 @@ export class Server {
 
   middlewares() {
     this.app.use(express.json());
+    this.app.use(express.urlencoded({ extended: true }));
+    this.sessionConfig();
     this.securityConfig();
     this.app.use(passport.initialize());
+    this.app.use(passport.session());
+  }
+
+  sessionConfig(): void {
+    this.app.use(
+      session({
+        secret: config.sessionSecret,
+        resave: true,
+        saveUninitialized: false,
+        cookie: {
+          secure: true,
+          maxAge: 1000 * 60 * 60 * 24 * 7
+        },
+        store: MongoStore.create({
+          // @ts-ignore TS2322
+          clientPromise: db.getClient().connect(),
+          collectionName: 'sessions',
+          ttl: 14 * 24 * 60 * 60,
+          autoRemove: 'native'
+        })
+      })
+    );
   }
 
   securityConfig() {
@@ -39,6 +67,7 @@ export class Server {
       }
     };
     this.app.use(cors(this.corsOptions));
+    this.app.use(helmet());
   }
 
   errorMiddlewares(): void {
