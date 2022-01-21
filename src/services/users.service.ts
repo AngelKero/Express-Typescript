@@ -34,6 +34,14 @@ class UserService {
       password: bcrypt.hashSync("Ratona3695?", 10),
       role: "admin"
     });
+
+    this.users.push({
+      id: faker.datatype.uuid(),
+      name: "Angel Zaragoza",
+      email: "overgametime@gmail.com",
+      avatar: faker.image.avatar(),
+      password: bcrypt.hashSync("Ratona3695?", 10)
+    });
   }
 
   emailExists(email: string): boolean {
@@ -85,6 +93,19 @@ class UserService {
   async findById(id: string): Promise<User> {
     const user = this.users.find(user => user.id === id);
     return user;
+  }
+
+  async update(id: string, user: Partial<User>): Promise<User> {
+    const userToUpdate = this.users.find(user => user.id === id);
+    if (!userToUpdate) throw boom.notFound();
+
+    const index = this.users.indexOf(userToUpdate);
+    this.users[index] = {
+      ...userToUpdate,
+      ...user
+    };
+
+    return this.users[index];
   }
 }
 

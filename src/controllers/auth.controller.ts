@@ -1,17 +1,34 @@
 import { User } from "./../interfaces/user.interface";
-import { signToken } from "./../utils/token.sign";
+import { service } from "./../services/auth.service";
 
 class AuthController {
   static async login(req, res, next) {
-    const user: User = req.user;
-    const payload = {
-      sub: user.id,
-      role: user.role
-    };
-    res.json({
-      user,
-      token: signToken(payload)
-    });
+    try {
+      const user: User = req.user;
+      res.json(service.signToken(user));
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async recovery(req, res, next) {
+    try {
+      const { email }: User = req.body;
+      const response = await service.sendRecovery(email);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async changePassword(req, res, next) {
+    try {
+      const { token, password } = req.body;
+      const response = await service.changePassword(token, password);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 }
 

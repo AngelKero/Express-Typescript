@@ -48,7 +48,7 @@ export class Server {
           // @ts-ignore TS2322
           clientPromise: db.getClient().connect(),
           collectionName: 'sessions',
-          ttl: 14 * 24 * 60 * 60,
+          ttl: 7 * 24 * 60 * 60,
           autoRemove: 'native'
         })
       })

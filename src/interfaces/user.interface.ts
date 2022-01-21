@@ -5,4 +5,5 @@ export interface User {
   avatar?: string;
   password: string;
   role?: string;
+  recoveryToken?: string;
 }
