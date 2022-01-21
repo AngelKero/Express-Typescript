@@ -2,10 +2,21 @@ import { User } from "./../interfaces/user.interface";
 import { service } from "./../services/auth.service";
 
 class AuthController {
+
+  static async signup(req, res, next) {
+    try {
+      //const user = await service.createUser(req.body);
+      res.status(201).send('User created');
+    } catch (error) {
+      next(error);
+    }
+  }
+
   static async login(req, res, next) {
     try {
       const user: User = req.user;
-      res.json(service.signToken(user));
+      const token = service.signSessionToken(user);
+      res.json({user, token});
     } catch (error) {
       next(error);
     }

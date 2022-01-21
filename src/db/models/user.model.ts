@@ -25,4 +25,4 @@ userSchema.path('email').validate( async (value) => {
   return !emailCount;
 }, 'Email already exists');
 
-module.exports = mongoose.model('user', userSchema);
+export default mongoose.model('user', userSchema);

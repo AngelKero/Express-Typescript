@@ -19,6 +19,7 @@ export class Server {
   constructor() {
     this.port = config.port;
     this.app = express();
+    this.app.set('port', this.port);
 
     this.middlewares();
     new MainRouter(this.app).routes();
@@ -76,8 +77,8 @@ export class Server {
   }
 
   listen(): void {
-    this.app.listen(this.port, () => {
-      console.log(`Servidor corriendo en puerto http://localhost:${this.port}`);
+    this.app.listen(this.app.get('port'), () => {
+      console.log(`Servidor corriendo en puerto http://localhost:${this.app.get('port')}`);
     });
   }
 }

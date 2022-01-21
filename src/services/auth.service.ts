@@ -1,18 +1,22 @@
 import boom from "@hapi/boom";
 import bcrypt from "bcrypt";
-import { service as userService } from "./users.service";
-import { signToken } from "./../utils/token.sign";
-import { User } from "src/interfaces/user.interface";
-import nodemailer from "nodemailer";
-import config from "./../config/config";
 import jwt from "jsonwebtoken";
+import { service as userService } from "./users.service";
+import MailerService from "./mailer.service";
+import { User } from "src/interfaces/user.interface";
+import config from "./../config/config";
 
 class AuthService {
+  private mailerService: MailerService;
 
   constructor() {
+    this.mailerService = new MailerService();
   }
 
-  async verifyUser(email: string, password: string) {
+  /**
+   * Verify user credentials for local login strategy
+   */
+  public async verifyUser(email: string, password: string) {
     const user = await userService.findByEmail(email);
     if (!user) throw boom.unauthorized("Invalid email");
 
@@ -25,13 +29,13 @@ class AuthService {
     return userLoggued;
   }
 
-  signToken(user: User) {
+  public signSessionToken(user: User) {
     const payload = {
       sub: user.id,
       role: user.role
     };
-    const token = jwt.sign(payload, config.jwtSecret, {expiresIn: "15min"});
-    return {user,token};
+    const token = jwt.sign(payload, config.jwtSecret, {expiresIn: "2days"});
+    return token;
   }
 
   public async sendRecovery(email: string) {
@@ -40,44 +44,31 @@ class AuthService {
 
     const payload = {sub: user.id};
     const token = jwt.sign(payload, config.recoverySecret, {expiresIn: "15min"});
-    const link = `${config.apiUrl}/recovery?${token}`;
-
     await userService.update(user.id, {recoveryToken: token});
+
+    const link = `${config.apiUrl}/recovery?token=${token}`;
 
     const mail = {
       from: config.smtpConfig.user, // sender address
       to: user.email, // list of receivers
       subject: "Recupera tu contraseña", // Subject line
-      html: `<b>Ingresa a este link para recuperar tu contraseña.</b>
-      <a href=${link}>Recuperar</a>`, // html body
+      html: `
+        <b>Ingresa a este link para recuperar tu contraseña.</b>
+        <a href=${link}>Recuperar</a>
+      `
     }
 
-    await this.sendMail(mail);
+    await this.mailerService.sendMail(mail);
     return {message: "Email sent"};
   }
 
-  private async sendMail(infoMail) {
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      secure: false,
-      port: 587,
-      auth: {
-        user: config.smtpConfig.user,
-        pass: config.smtpConfig.pass
-      }
-    });
-    const info = await transporter.sendMail(infoMail);
-    return info;
-  }
-
-
-  async changePassword(token: string, newPassword: string) {
-    const payload: any = jwt.verify(token, config.recoverySecret);
+  async changePassword(recoverToken: string, newPassword: string) {
+    const payload: any = jwt.verify(recoverToken, config.recoverySecret);
     if (!payload) throw boom.unauthorized();
 
     const user = await userService.findById(payload.sub);
     if (!user) throw boom.unauthorized();
-    if (user.recoveryToken !== token) throw boom.unauthorized();
+    if (user.recoveryToken !== recoverToken) throw boom.unauthorized();
 
     await userService.update(payload.sub, {
       password: bcrypt.hashSync(newPassword, 10),
