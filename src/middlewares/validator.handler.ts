@@ -7,9 +7,9 @@ import Joi from "joi";
  * @param property The property of the request object to validate
  * @returns A middleware function
  */
-function validatorHandler(validator: Joi.ObjectSchema, property: string) {
+function validatorHandler(validator: Joi.ObjectSchema, property: string = 'body') {
   return (req, res, next) => {
-    const data = property ? req[property] : req.body;
+    const data = req[property];
     const { error } = validator.validate(data, { abortEarly: false });
     if (error) {
       next(boom.badRequest(error.message));

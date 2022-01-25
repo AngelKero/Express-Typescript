@@ -3,7 +3,7 @@ import { service } from "./../services/users.service";
 class UserController {
   static async all(_req, res, next) {
     try {
-      const users = await service.find();
+      const users = await service.findAll();
       res.json({
         totalUsers: users.length,
         users
@@ -16,7 +16,7 @@ class UserController {
   static async one(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await service.findOne(id);
+      const user = await service.findOne({_id: id});
       res.json(user);
     } catch (error) {
       next(error);
@@ -25,7 +25,7 @@ class UserController {
 
   static async create(req, res, next) {
     try {
-      const user = await service.create(req.body);
+      const user = await service.create(req.user._id, req.body);
       res.json(user);
     } catch (error) {
       next(error);

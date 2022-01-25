@@ -1,9 +1,10 @@
 export interface User {
-  id?: string;
+  _id?: string;
   name?: string;
   email: string;
   avatar?: string;
-  password: string;
+  password?: string;
   role?: string;
   recoveryToken?: string;
+  hashPassword?: Function;
 }

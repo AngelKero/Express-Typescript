@@ -1,10 +1,13 @@
+import { Schema } from "mongoose";
+import { User } from "./user.interface";
+
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   price: number;
   image: string;
-  vendor: string;
-  author: string;
   description: string;
+  authorId: Schema.Types.ObjectId;
+  vendor: string;
   isBlock: boolean;
 }

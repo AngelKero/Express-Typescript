@@ -1,9 +1,7 @@
 import express, { Router } from "express";
 import products from "./routes/products.router";
-import defaultRoute from "./routes/default.router";
 import users from "./routes/users.router";
 import auth from "./routes/auth.router";
-import profile from "./routes/profile.router";
 
 interface IRouter {
   router: Router;
@@ -22,10 +20,6 @@ export class MainRouter {
     // Entities routes
     this.paths = [
       {
-        router: defaultRoute,
-        path: "/"
-      },
-      {
         router: products,
         path: "/products"
       },
@@ -36,10 +30,6 @@ export class MainRouter {
       {
         router: auth,
         path: "/auth"
-      },
-      {
-        router: profile,
-        path: "/profile"
       }
     ];
   }

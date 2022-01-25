@@ -27,11 +27,14 @@ export const localSignupStrategy = new Strategy(
     try {
       const userSchema = new UserSchema();
       userSchema.email = email;
+      userSchema.name = email;
+      userSchema.role = 'company';
       userSchema.password = await userSchema.hashPassword(password);
 
-      const user = await userSchema.save();
+      const user = await userSchema.save({ validateModifiedOnly: false });
       return done(null, user);
     } catch (error) {
+      console.log(error);
       done(boom.badRequest(error), false);
     }
   }

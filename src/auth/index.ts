@@ -9,9 +9,9 @@ passport.use('login', localLoginStrategy); // Use with <passport.authenticate('l
 passport.use(jwtStrategy); // Use with <passport.authenticate('jwt')>
 
 passport.serializeUser((user: User, done) => {
-  done(null, {id: user.id, role: user.role});
+  done(null, {id: user._id, role: user.role});
 });
 
 passport.deserializeUser((user: User, done) => {
-  done(null, {id: user.id, role: user.role});
+  done(null, {id: user._id, role: user.role});
 });

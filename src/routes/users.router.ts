@@ -1,24 +1,29 @@
 import express from "express";
-import { checkApiKey } from "../middlewares/auth.handler";
+import passport from "passport";
+import { checkApiKey, checkRoles } from "../middlewares/auth.handler";
 import controller from "./../controllers/user.controller";
 import validateData from "./../middlewares/validator.handler";
 import { createUserValidation, getUserValidation } from "./../validations/user.validator";
 const router = express.Router();
 
 router.get("/",
-  checkApiKey,
+  passport.authenticate("jwt"),
+  checkRoles('admin'),
   controller.all
 );
 
 router.get("/:id",
-  checkApiKey,
+  passport.authenticate("jwt"),
+  checkRoles('admin'),
   validateData(getUserValidation, "params"),
   controller.one
 );
 
 router.post("/",
-  checkApiKey,
+  passport.authenticate("jwt"),
+  checkRoles('admin'),
   validateData(createUserValidation, "body"),
+  passport.authenticate('signup', { session: false }),
   controller.create
 );
 

@@ -17,21 +17,19 @@ class AuthService {
    * Verify user credentials for local login strategy
    */
   public async verifyUser(email: string, password: string) {
-    const user = await userService.findByEmail(email);
+    const user = await userService.findWithPassword(email);
     if (!user) throw boom.unauthorized("Invalid email");
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw boom.unauthorized("Invalid password");
 
-    const userLoggued = Object.assign({}, user);
-    delete userLoggued.password;
-
-    return userLoggued;
+    delete user.password;
+    return user;
   }
 
   public signSessionToken(user: User) {
     const payload = {
-      sub: user.id,
+      sub: user._id,
       role: user.role
     };
     const token = jwt.sign(payload, config.jwtSecret, {expiresIn: "2days"});
@@ -42,9 +40,9 @@ class AuthService {
     const user = await userService.findByEmail(email);
     if (!user) throw boom.unauthorized();
 
-    const payload = {sub: user.id};
+    const payload = {sub: user._id};
     const token = jwt.sign(payload, config.recoverySecret, {expiresIn: "15min"});
-    await userService.update(user.id, {recoveryToken: token});
+    await userService.update(user._id, {'recoveryToken': token});
 
     const link = `${config.apiUrl}/recovery?token=${token}`;
 
@@ -63,12 +61,20 @@ class AuthService {
   }
 
   async changePassword(recoverToken: string, newPassword: string) {
-    const payload: any = jwt.verify(recoverToken, config.recoverySecret);
+    let payload: any;
+    try {
+      payload = jwt.verify(recoverToken, config.recoverySecret);
+    } catch (error) {
+      throw boom.unauthorized(error);
+    }
     if (!payload) throw boom.unauthorized();
 
-    const user = await userService.findById(payload.sub);
+    const user = await userService.findByIdComplete(payload.sub);
     if (!user) throw boom.unauthorized();
     if (user.recoveryToken !== recoverToken) throw boom.unauthorized();
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    if (user.password === passwordHash) throw boom.unauthorized("Password is the same");
 
     await userService.update(payload.sub, {
       password: bcrypt.hashSync(newPassword, 10),

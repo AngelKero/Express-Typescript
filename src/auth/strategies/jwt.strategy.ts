@@ -10,14 +10,12 @@ const opts: StrategyOptions = {
 
 const jwtStrategy = new Strategy(opts, async (payload, done) => {
   try {
-    const user = await service.findById(payload.sub);
-    if (!user) {
-      return done(boom.unauthorized(), false);
-    }
+    const user = await service.findById(payload.sub) ?? false;
+    if (!user) throw boom.unauthorized();
 
     return done(null, payload);
   } catch (error) {
-    return done(error);
+    return done(error, false);
   }
 });
 
