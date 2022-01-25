@@ -30,7 +30,7 @@ Este middleware nos permite evitar preocuparnos por escribir las rutas con o sin
 Passport es un middleware que nos permite establecer diferentes estrategias de autenticación a nuestras aplicaciones.
 <https://github.com/jaredhanson/passport>
 
-### Otros nombres utiles
+### Otros middlewares utiles
 
   1. express-session
   2. cookie-parser
