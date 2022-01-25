@@ -5,9 +5,10 @@
   "main": "build/index.js",
   "scripts": {
     "start": "ts-node ./src/index.ts",
-    "start:prod": "npm run build && node ./dist/src/index.js",
+    "start:prod": "npm run build && node ./dist/index.js",
     "build": "npx tsc",
-    "watch": "nodemon -L"
+    "watch": "nodemon -L",
+    "clean": "rimraf ./dist"
   },
   "keywords": [],
   "author": "Angel Zaragoza <zangelweb@gmail.com>",

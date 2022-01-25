@@ -9,3 +9,5 @@
 3. npm run build: Compilar los archivos de typescript dentro de la carpeta '/dist'.
 
 4. npm run watch: Iniciar el servidor con ts-node y observar los cambios de typescript con nodemon para reiniciar el servidor de express.
+
+5. npm run clean: Eliminar carpeta '/dist'
