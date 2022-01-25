@@ -25,12 +25,20 @@ export class ProductService {
     return products as Product[];
   }
 
+  async all(): Promise<Product[]> {
+    try {
+      const products = await ProductSchema.find();
+      return products.length > 0 ? products.map(product => product.toObject()) : null;
+    } catch (error) {
+      throw boom.notFound(error);
+    }
+  }
 
   async create(authorId: string, product: Product): Promise<Product> {
     try {
       const productModel = new ProductSchema({...product, authorId});
       const saved = await productModel.save();
-      return saved.toObject();
+      return saved ? saved.toObject() : null;
     } catch (error) {
       throw boom.badImplementation(error);
     }
@@ -39,31 +47,37 @@ export class ProductService {
   async findByUser(userId: string): Promise<Product[]> {
     try {
       const products = await ProductSchema.find({authorId: new Types.ObjectId(userId)});
-      return products.map(product => product.toObject());
+      return products.length > 0 ? products.map(product => product.toObject()) : null;
     } catch (error) {
-      throw boom.badImplementation(error);
+      throw boom.notFound(error);
     }
   }
 
-  async findOne(id: string): Promise<Product> {
+  async findOne(query: Partial<Product>): Promise<Product> {
     try {
-      const product = await ProductSchema.findById(id);
-      return product.toObject();
+      const product = await ProductSchema.findOne(query);
+      return product ? product.toObject(): null;
     } catch (error) {
       throw boom.badImplementation(error);
     }
   }
 
-  // async update(id: string, product: Product): void {
+  async update(id: string, data: Partial<Product>): Promise<Product> {
+    try {
+      const updated = await ProductSchema.findByIdAndUpdate(id, data, {new: true});
+      return updated ? updated.toObject(): null;
+    } catch (error) {
+      throw boom.notFound(error);
+    }
+  }
 
-  // }
-
-  // async partialUpdate(id: string, product: Product): void {
-
-  // }
-
-  // async delete(id: string): void {
-
-  // }
+  async delete(id: string): Promise<Product> {
+    try {
+      const deleted = await ProductSchema.findByIdAndDelete(id);
+      return deleted ? deleted.toObject(): null;
+    } catch (error) {
+      throw boom.notFound(error);
+    }
+  }
 
 }

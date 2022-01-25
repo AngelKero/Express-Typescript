@@ -22,6 +22,24 @@ export const createProductValidation = Joi.object<Product>({
   isBlock: isBlock.required(),
 });
 
-export const updateProductValidation = Joi.object<Product>({
-  name, price, image, vendor, description, isBlock
+export const updateAllProductValidation = Joi.object<Product>({
+  _id: id.empty(),
+  name: name.required(),
+  price: price.required(),
+  image: image.required(),
+  description: description.required(),
+  vendor: vendor.required(),
+  authorId: id.empty(),
+  isBlock: isBlock.required()
+});
+
+export const updatePartialProductValidation = Joi.object<Product>({
+  _id: id.empty(),
+  name: name.optional(),
+  price: price.optional(),
+  image: image.optional(),
+  description: description.optional(),
+  vendor: vendor.optional(),
+  authorId: id.empty(),
+  isBlock: isBlock.optional()
 });
