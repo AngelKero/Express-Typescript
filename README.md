@@ -1,23 +1,11 @@
-# Aprendiendo Express.js
+# Express.js, configuración typescript
 
-## Configurando entorno
+## Comandos
 
-1. Generar .gitignore
-  <https://www.gitignore.io>
+1. npm run start: Iniciar el servidor con ts-node.
 
-2. Configuración del editor (.editorconfig)
+2. npm run start:prod: Iniciar el servidor en producción, primero compila ts para despues iniciar el servidor de express con el javascript compilado.
 
-3. Configurar eslint config (.eslintrc)
+3. npm run build: Compilar los archivos de typescript dentro de la carpeta '/dist'.
 
-4. Instalar paqueterias de desarrollo
-  `npm i nodemon eslint eslint-config-prettier eslint-plugin-prettier prettier -D`
-
-5. Crear scripts con npm y probar
-  `"dev": "nodemon index.js",
-  "start": "node index.js",
-  "lint": "eslint"`
-
-## Instalar Express
-
-1. Instalar dependencia
-  `npm install express`
+4. npm run watch: Iniciar el servidor con ts-node y observar los cambios de typescript con nodemon para reiniciar el servidor de express.
